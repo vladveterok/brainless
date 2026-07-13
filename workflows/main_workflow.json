@@ -1,0 +1,105 @@
+{
+  "name": "Universal Second Brain - Main Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ]
+      },
+      "id": "99ea78f8-3e4b-4df2-8c1d-19598c19eb14",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "731df464-9df2-421f-82ff-11c58ed85c96"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "^https?:\\/\\/(?:www\\.)?(?:youtube\\.com|youtu\\.be)\\/.*",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "YouTube Route"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "^https?:\\/\\/.*",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Article Route"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": true
+        }
+      },
+      "id": "f031bb99-31e3-4d6d-8bde-658b0934cf53",
+      "name": "Switch Node (Router)",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.1,
+      "position": [
+        460,
+        300
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch Node (Router)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f7ef33d3-8ea8-4e8c-8af0-3bb802b54546"
+}

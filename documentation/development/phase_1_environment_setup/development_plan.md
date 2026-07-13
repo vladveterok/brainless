@@ -1,6 +1,6 @@
 # Phase 1: Environment Setup & Ingestion
 
-**Status:** ToDo
+**Status:** Done
 
 ## Step-by-Step Plan
 1. Create a `docker-compose.yml` for isolated n8n deployment with persistent volumes.
@@ -13,4 +13,4 @@
 8. Test the routing logic.
 
 ## Development History
-*(No attempts logged yet)*
+* **[2026-07-13] Attempt 1:** Initializing phase. Creating `docker-compose.yml`, `.env.example`, and `scripts/setup_host.sh`.

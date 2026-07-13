@@ -2,7 +2,7 @@
 
 | Phase | Description | Status |
 |---|---|---|
-| Phase 1 | Environment Setup & Ingestion | ToDo |
+| Phase 1 | Environment Setup & Ingestion | Done |
 | Phase 2 | Extraction Integration | ToDo |
 | Phase 3 | AI Processing Integration | ToDo |
 | Phase 4 | Building the Storage Adapter (Obsidian) | ToDo |

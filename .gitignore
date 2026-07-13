@@ -1,0 +1,11 @@
+# Environment variables
+.env
+
+# n8n local data (in case of volume misconfiguration)
+.n8n/
+
+# Mac OS
+.DS_Store
+
+# Node modules (for future scripting phases)
+node_modules/
