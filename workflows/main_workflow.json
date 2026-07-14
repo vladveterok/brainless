@@ -261,7 +261,7 @@
       "typeVersion": 2,
       "position": [
         230,
-        300
+        -300
       ]
     },
     {
@@ -291,6 +291,21 @@
       "typeVersion": 4.1,
       "position": [
         2100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{$node[\"Telegram Trigger\"].json.message.chat.id}}",
+        "text": "=✅ Successfully saved to Obsidian Vault!\n\n📄 **{{$node[\"Set Normalized Insights\"].json.title}}**\n🏷️ Tags: {{$node[\"Set Normalized Insights\"].json.tags.join(', ')}}",
+        "additionalFields": {}
+      },
+      "id": "telegram-send-node",
+      "name": "Telegram Send",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        2400,
         300
       ]
     }
@@ -426,6 +441,17 @@
         [
           {
             "node": "Switch Node (Router)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obsidian Storage Node": {
+      "main": [
+        [
+          {
+            "node": "Telegram Send",
             "type": "main",
             "index": 0
           }
