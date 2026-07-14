@@ -19,6 +19,8 @@
     },
     {
       "parameters": {
+        "mode": "rules",
+        "output": "rename",
         "rules": {
           "values": [
             {
@@ -30,11 +32,11 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.message.text }}",
-                    "rightValue": "^https?:\\/\\/(?:www\\.)?(?:youtube\\.com|youtu\\.be)\\/.*",
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "youtube",
                     "operator": {
                       "type": "string",
-                      "operation": "regex",
+                      "operation": "equals",
                       "singleValue": true
                     }
                   }
@@ -53,11 +55,11 @@
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.message.text }}",
-                    "rightValue": "^https?:\\/\\/.*",
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "article",
                     "operator": {
                       "type": "string",
-                      "operation": "regex",
+                      "operation": "equals",
                       "singleValue": true
                     }
                   }
@@ -84,7 +86,7 @@
     },
     {
       "parameters": {
-        "url": "https://r.jina.ai/={{$json.message.text}}",
+        "url": "https://r.jina.ai/={{$json.target_url}}",
         "options": {}
       },
       "id": "jina-api-extract-article",
@@ -98,7 +100,7 @@
     },
     {
       "parameters": {
-        "url": "=http://youtube-extractor:5000/transcript?url={{encodeURIComponent($json.message.text)}}",
+        "url": "=http://youtube-extractor:5000/transcript?url={{encodeURIComponent($json.target_url)}}",
         "options": {}
       },
       "id": "youtube-transcript",
@@ -163,7 +165,7 @@
             {
               "id": "set-text",
               "name": "raw_content",
-              "value": "={{$json.message.text}}",
+              "value": "={{$json.original_text}}",
               "type": "string"
             }
           ]
@@ -198,7 +200,7 @@
         "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={{$env[\"GEMINI_API_KEY\"]}}",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ { \"contents\": [ { \"parts\": [ { \"text\": \"Extract a title, a 3-sentence summary, 5 key takeaways, and relevant tags (starting with #) from the following text. Return ONLY valid JSON with keys: 'title', 'summary', 'key_takeaways', 'tags'.\\n\\nText: \" + ($json.raw_content || $json.text || $json.data || $json.message?.text || '') } ] } ], \"generationConfig\": { \"responseMimeType\": \"application/json\" } } }}",
+        "jsonBody": "={{ { \"contents\": [ { \"parts\": [ { \"text\": \"Custom User Instructions:\\n\" + ($node[\"Message Parser\"].json.user_prompt ? $node[\"Message Parser\"].json.user_prompt : 'None provided.') + \"\\n\\nTask:\\nReturn ONLY valid JSON with keys: 'title', 'tags', and 'content'.\\nIf no Custom User Instructions are provided, 'content' must be a 3-sentence summary and 5 key takeaways formatted in Markdown.\\nIf Custom User Instructions ARE provided, ignore the default summary format. Instead, 'content' must contain the detailed response to the Custom User Instructions formatted in Markdown.\\n\\nText: \" + ($json.raw_content || $json.text || $json.data || $json.original_text || '') } ] } ], \"generationConfig\": { \"responseMimeType\": \"application/json\" } } }}",
         "options": {}
       },
       "id": "gemini-ai-node",
@@ -208,7 +210,10 @@
       "position": [
         1500,
         300
-      ]
+      ],
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 15000
     },
     {
       "parameters": {
@@ -221,16 +226,10 @@
               "type": "string"
             },
             {
-              "id": "summary",
-              "name": "summary",
-              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text).summary }}",
+              "id": "content",
+              "name": "content",
+              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text).content }}",
               "type": "string"
-            },
-            {
-              "id": "key_takeaways",
-              "name": "key_takeaways",
-              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text).key_takeaways }}",
-              "type": "array"
             },
             {
               "id": "tags",
@@ -250,6 +249,19 @@
         1800,
         300
       ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst text = $json.message.text || '';\nconst urlRegex = /(https?:\\/\\/[^\\s]+)/;\nconst match = text.match(urlRegex);\n\nlet target_url = null;\nlet user_prompt = text.trim();\nlet route = 'text';\n\nif (match) {\n    target_url = match[1];\n    user_prompt = text.replace(target_url, '').trim();\n    \n    if (target_url.includes('youtube.com') || target_url.includes('youtu.be')) {\n        route = 'youtube';\n    } else {\n        route = 'article';\n    }\n}\n\nreturn {\n    json: {\n        target_url: target_url,\n        user_prompt: user_prompt,\n        route: route,\n        original_text: text\n    }\n};\n"
+      },
+      "id": "c05597db-77a9-4a78-a18d-0eeb915068bb",
+      "name": "Message Parser",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        230,
+        300
+      ]
     }
   ],
   "pinData": {},
@@ -258,7 +270,7 @@
       "main": [
         [
           {
-            "node": "Switch Node (Router)",
+            "node": "Message Parser",
             "type": "main",
             "index": 0
           }
@@ -361,6 +373,17 @@
         [
           {
             "node": "Set Normalized Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message Parser": {
+      "main": [
+        [
+          {
+            "node": "Switch Node (Router)",
             "type": "main",
             "index": 0
           }

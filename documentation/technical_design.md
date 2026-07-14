@@ -13,12 +13,12 @@ The architecture is divided into three distinct decoupled layers:
 3. **Storage Adapter (Sub-Workflow):** Normalizes the payload and pushes it to the target database.
 
 ### Flow Diagram
-[Telegram Bot] -> (Webhook) -> [Router Node]
-                                  ├──> (Raw Text) ------------------------> [AI Summarizer]
-                                  ├──> (Article URL) -> [Jina AI Reader] -> [AI Summarizer]
-                                  └──> (YouTube URL) -> [YT Transcript] --> [AI Summarizer]
-                                                                                  │
-                                                                           [Set Normalized JSON]
+[Telegram Bot] -> (Webhook) -> [Message Parser] -> [Router Node]
+                                                      ├──> (Raw Text) ------------------------> [AI Summarizer]
+                                                      ├──> (Article URL) -> [Jina AI Reader] -> [AI Summarizer]
+                                                      └──> (YouTube URL) -> [YT Transcript] --> [AI Summarizer]
+                                                                                                      │
+                                                                                               [Set Normalized JSON]
                                                                                   │
                                                             [Execute Sub-Workflow (Storage Adapter)]
                                                                                   │
@@ -30,10 +30,11 @@ The architecture is divided into three distinct decoupled layers:
 
 ### 3.2 Ingestion Layer
 *   **Telegram Trigger Node:** Listens for new messages sent to a dedicated Telegram Bot.
-*   **Switch Node (Router):** Uses regex to classify the incoming message string:
-    *   `^https?://.*youtube\.com/|^https?://youtu\.be/` -> YouTube Route
-    *   `^https?://.*` -> Web Article Route
-    *   `Default` -> Raw Text Route
+*   **Message Parser (Code Node):** Parses the incoming text to separate custom user prompts from the target URL. It extracts the URL, sets the remaining text as the user instruction, and determines the route (youtube, article, or text).
+*   **Switch Node (Router):** Routes based on the variable evaluated by the Parser:
+    *   `route == 'youtube'` -> YouTube Route
+    *   `route == 'article'` -> Web Article Route
+    *   `route == 'text'` -> Raw Text Route
 
 ### 3.3 Extraction Layer
 *   **YouTube Route:** Uses the free `youtube-transcript.io` API (via an HTTP Request node) or the `n8n-nodes-obsidian` community node to extract full video transcripts without requiring a YouTube Data API quota.
