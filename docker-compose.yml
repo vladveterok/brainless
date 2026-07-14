@@ -10,6 +10,9 @@ services:
     environment:
       - CREDENTIALS_OVERWRITE_DATA={"telegramApi":{"accessToken":"${TELEGRAM_BOT_TOKEN}"}}
       - WEBHOOK_URL=${WEBHOOK_URL}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - N8N_ENV_VARS_ALLOW_LIST=GEMINI_API_KEY
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
     env_file:
       - .env
     volumes:

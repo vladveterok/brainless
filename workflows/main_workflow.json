@@ -194,52 +194,19 @@
     },
     {
       "parameters": {
-        "url": "https://r.jina.ai/={{$json.message.text}}",
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={{$env[\"GEMINI_API_KEY\"]}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"contents\": [ { \"parts\": [ { \"text\": \"Extract a title, a 3-sentence summary, 5 key takeaways, and relevant tags (starting with #) from the following text. Return ONLY valid JSON with keys: 'title', 'summary', 'key_takeaways', 'tags'.\\n\\nText: \" + ($json.raw_content || $json.text || $json.data || $json.message?.text || '') } ] } ], \"generationConfig\": { \"responseMimeType\": \"application/json\" } } }}",
         "options": {}
       },
-      "id": "jina-api-extract-article",
-      "name": "Jina API Extract (Article)",
+      "id": "gemini-ai-node",
+      "name": "Gemini AI Node",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        700,
-        300
-      ]
-    },
-    {
-      "parameters": {
-        "url": "=http://youtube-extractor:5000/transcript?url={{encodeURIComponent($json.message.text)}}",
-        "options": {}
-      },
-      "id": "youtube-transcript",
-      "name": "YouTube Transcript",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        700,
-        100
-      ]
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "set-article",
-              "name": "raw_content",
-              "value": "={{$json.data}}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "set-article-content",
-      "name": "Set Article Content",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.2,
-      "position": [
-        900,
+        1500,
         300
       ]
     },
@@ -248,57 +215,39 @@
         "assignments": {
           "assignments": [
             {
-              "id": "set-youtube",
-              "name": "raw_content",
-              "value": "={{$json.text}}",
+              "id": "title",
+              "name": "title",
+              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text).title }}",
               "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "set-youtube-content",
-      "name": "Set YouTube Content",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.2,
-      "position": [
-        900,
-        100
-      ]
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
+            },
             {
-              "id": "set-text",
-              "name": "raw_content",
-              "value": "={{$json.message.text}}",
+              "id": "summary",
+              "name": "summary",
+              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text).summary }}",
               "type": "string"
+            },
+            {
+              "id": "key_takeaways",
+              "name": "key_takeaways",
+              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text).key_takeaways }}",
+              "type": "array"
+            },
+            {
+              "id": "tags",
+              "name": "tags",
+              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text).tags }}",
+              "type": "array"
             }
           ]
         },
         "options": {}
       },
-      "id": "set-text-content",
-      "name": "Set Text Content",
+      "id": "set-normalized-insights",
+      "name": "Set Normalized Insights",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.2,
       "position": [
-        700,
-        500
-      ]
-    },
-    {
-      "parameters": {
-        "mode": "append"
-      },
-      "id": "merge-payload",
-      "name": "Merge Payload",
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 2.1,
-      "position": [
-        1200,
+        1800,
         300
       ]
     }
@@ -390,6 +339,28 @@
         [
           {
             "node": "Merge Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Payload": {
+      "main": [
+        [
+          {
+            "node": "Gemini AI Node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini AI Node": {
+      "main": [
+        [
+          {
+            "node": "Set Normalized Insights",
             "type": "main",
             "index": 0
           }
