@@ -44,3 +44,8 @@
 2.  Format a success reply to the user: *"✅ Saved to Obsidian: [Title] with tags [Tags]"*.
 3.  Export the main workflow and the adapter workflow as `main_workflow.json` and `adapter_obsidian.json`.
 4.  Write a detailed `README.md` explaining how to import the JSON files into n8n and where to paste the required API keys.
+
+## Phase 6: Infrastructure & Deployment
+**Goal:** Establish a permanent, stable hosting and delivery pipeline.
+1.  **Hosting Solution:** Define and implement a permanent hosting strategy for the n8n instance (replacing the temporary local docker setup if necessary).
+2.  **Webhook Stability:** Replace the unstable `localtunnel` workaround with a production-grade reverse proxy (e.g., Cloudflare Tunnels, Nginx, or Caddy) to ensure reliable Telegram webhook delivery.
