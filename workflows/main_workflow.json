@@ -81,6 +81,226 @@
         460,
         300
       ]
+    },
+    {
+      "parameters": {
+        "url": "https://r.jina.ai/={{$json.message.text}}",
+        "options": {}
+      },
+      "id": "jina-api-extract-article",
+      "name": "Jina API Extract (Article)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=http://youtube-extractor:5000/transcript?url={{encodeURIComponent($json.message.text)}}",
+        "options": {}
+      },
+      "id": "youtube-transcript",
+      "name": "YouTube Transcript",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        700,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set-article",
+              "name": "raw_content",
+              "value": "={{$json.data}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-article-content",
+      "name": "Set Article Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set-youtube",
+              "name": "raw_content",
+              "value": "={{$json.text}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-youtube-content",
+      "name": "Set YouTube Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [
+        900,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set-text",
+              "name": "raw_content",
+              "value": "={{$json.message.text}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-text-content",
+      "name": "Set Text Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [
+        700,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "merge-payload",
+      "name": "Merge Payload",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://r.jina.ai/={{$json.message.text}}",
+        "options": {}
+      },
+      "id": "jina-api-extract-article",
+      "name": "Jina API Extract (Article)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=http://youtube-extractor:5000/transcript?url={{encodeURIComponent($json.message.text)}}",
+        "options": {}
+      },
+      "id": "youtube-transcript",
+      "name": "YouTube Transcript",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        700,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set-article",
+              "name": "raw_content",
+              "value": "={{$json.data}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-article-content",
+      "name": "Set Article Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set-youtube",
+              "name": "raw_content",
+              "value": "={{$json.text}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-youtube-content",
+      "name": "Set YouTube Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [
+        900,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "set-text",
+              "name": "raw_content",
+              "value": "={{$json.message.text}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-text-content",
+      "name": "Set Text Content",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [
+        700,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "append"
+      },
+      "id": "merge-payload",
+      "name": "Merge Payload",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        300
+      ]
     }
   ],
   "pinData": {},
@@ -90,6 +310,86 @@
         [
           {
             "node": "Switch Node (Router)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch Node (Router)": {
+      "main": [
+        [
+          {
+            "node": "YouTube Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Jina API Extract (Article)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Text Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube Transcript": {
+      "main": [
+        [
+          {
+            "node": "Set YouTube Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jina API Extract (Article)": {
+      "main": [
+        [
+          {
+            "node": "Set Article Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set YouTube Content": {
+      "main": [
+        [
+          {
+            "node": "Merge Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Article Content": {
+      "main": [
+        [
+          {
+            "node": "Merge Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Text Content": {
+      "main": [
+        [
+          {
+            "node": "Merge Payload",
             "type": "main",
             "index": 0
           }

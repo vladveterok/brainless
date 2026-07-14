@@ -15,5 +15,12 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
 
+  youtube-extractor:
+    build: ./services/youtube-extractor
+    container_name: youtube-extractor
+    restart: always
+    expose:
+      - "5000"
+
 volumes:
   n8n_data:

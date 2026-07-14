@@ -51,7 +51,7 @@ echo "Environment validated successfully!"
 
 # 4. Start n8n
 echo "Starting n8n via Docker Compose..."
-docker compose up -d
+docker compose up -d --build
 
 echo "--------------------------------------------------------"
 echo "n8n is running. You can access it at http://localhost:5678"
