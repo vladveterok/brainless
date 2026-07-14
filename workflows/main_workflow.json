@@ -220,7 +220,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={{$env[\"GEMINI_API_KEY\"]}}",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key={{$env[\"GEMINI_API_KEY\"]}}",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ { \"contents\": [ { \"parts\": [ { \"text\": \"Custom User Instructions:\\n\" + ($node[\"Message Parser\"].json.user_prompt ? $node[\"Message Parser\"].json.user_prompt : 'None provided.') + \"\\n\\nTask:\\nReturn ONLY valid JSON with keys: 'title', 'tags', and 'content'.\\nIf no Custom User Instructions are provided, 'content' must be a 3-sentence summary and 5 key takeaways formatted in Markdown.\\nIf Custom User Instructions ARE provided, ignore the default summary format. Instead, 'content' must contain the detailed response to the Custom User Instructions formatted in Markdown.\\n\\nText: \" + ($json.raw_content || $json.text || $json.data || $json.original_text || '') } ] } ], \"generationConfig\": { \"responseMimeType\": \"application/json\" } } }}",
@@ -240,34 +240,12 @@
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "title",
-              "name": "title",
-              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text).title }}",
-              "type": "string"
-            },
-            {
-              "id": "content",
-              "name": "content",
-              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text).content }}",
-              "type": "string"
-            },
-            {
-              "id": "tags",
-              "name": "tags",
-              "value": "={{ JSON.parse($json.candidates[0].content.parts[0].text).tags }}",
-              "type": "array"
-            }
-          ]
-        },
-        "options": {}
+        "jsCode": "const responseText = $json.candidates[0].content.parts[0].text;\n\n// Strip potential markdown backticks just in case\nconst cleanJson = responseText.replace(/```json\\n?|```/g, '').trim();\nconst parsed = JSON.parse(cleanJson);\n\nreturn {\n    json: {\n        title: parsed.title,\n        tags: parsed.tags || [],\n        content: parsed.content\n    }\n};"
       },
       "id": "set-normalized-insights",
       "name": "Set Normalized Insights",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.2,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
         1800,
         300
@@ -283,6 +261,36 @@
       "typeVersion": 2,
       "position": [
         230,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://host.docker.internal:27124/vault/{{encodeURIComponent($json.title)}}.md",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env[\"OBSIDIAN_API_KEY\"]}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/markdown",
+        "body": "=---\ntags: [{{$json.tags.join(', ')}}]\nsource: {{$node[\"Message Parser\"].json.route}}\n---\n# {{$json.title}}\n\n{{$json.content}}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "obsidian-storage-node",
+      "name": "Obsidian Storage Node",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2100,
         300
       ]
     }
@@ -396,6 +404,17 @@
         [
           {
             "node": "Set Normalized Insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Normalized Insights": {
+      "main": [
+        [
+          {
+            "node": "Obsidian Storage Node",
             "type": "main",
             "index": 0
           }

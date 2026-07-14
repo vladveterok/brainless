@@ -6,5 +6,5 @@
 | Phase 2 | Extraction Integration | Done |
 | Phase 3 | AI Processing Integration | Done |
 | Phase 3.5 | Parsing & Prompt Injection | Completed |
-| Phase 4 | Building the Storage Adapter (Obsidian) | ToDo |
+| Phase 4 | Building the Storage Adapter (Obsidian) | Done |
 | Phase 5 | Closing the Loop | ToDo |
