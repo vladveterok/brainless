@@ -22,7 +22,7 @@ Run the setup script to generate your `.env` file:
 3. BotFather will provide an **HTTP API Token**. Copy it.
 
 ### 3. Configure the Environment
-1. In a new terminal, start a local tunnel to expose port 5678 to the internet, you can use --subdomain flag and provide teh subdomain from WEBHOOK_URL in .env:
+1. In a new terminal, start a local tunnel to expose port 5678 to the internet, you can use --subdomain flag and provide teh subdomain from WEBHOOK_URL in .env:§
    ```bash
    npx localtunnel --port 5678 --subdomain your-subdomain 
    ```
