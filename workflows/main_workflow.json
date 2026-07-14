@@ -68,11 +68,34 @@
               },
               "renameOutput": true,
               "outputKey": "Article Route"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "rightValue": "text",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text Route"
             }
           ]
         },
         "options": {
-          "fallbackOutput": true
+          "fallbackOutput": false
         }
       },
       "id": "f031bb99-31e3-4d6d-8bde-658b0934cf53",
@@ -86,7 +109,7 @@
     },
     {
       "parameters": {
-        "url": "https://r.jina.ai/={{$json.target_url}}",
+        "url": "=https://r.jina.ai/{{$json.target_url}}",
         "options": {}
       },
       "id": "jina-api-extract-article",

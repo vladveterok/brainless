@@ -64,66 +64,45 @@ return {
                 node["parameters"] = {
                     "mode": "rules",
                     "output": "rename",
-                    "rules": {
-                        "values": [
-                            {
-                                "conditions": {
-                                    "options": {
-                                        "caseSensitive": True,
-                                        "leftValue": "",
-                                        "typeValidation": "strict"
-                                    },
-                                    "conditions": [
-                                        {
-                                            "leftValue": "={{ $json.route }}",
-                                            "rightValue": "youtube",
-                                            "operator": {
-                                                "type": "string",
-                                                "operation": "equals",
-                                                "singleValue": True
-                                            }
-                                        }
-                                    ],
-                                    "combinator": "and"
-                                },
-                                "renameOutput": True,
-                                "outputKey": "YouTube Route"
-                            },
-                            {
-                                "conditions": {
-                                    "options": {
-                                        "caseSensitive": True,
-                                        "leftValue": "",
-                                        "typeValidation": "strict"
-                                    },
-                                    "conditions": [
-                                        {
-                                            "leftValue": "={{ $json.route }}",
-                                            "rightValue": "article",
-                                            "operator": {
-                                                "type": "string",
-                                                "operation": "equals",
-                                                "singleValue": True
-                                            }
-                                        }
-                                    ],
-                                    "combinator": "and"
-                                },
-                                "renameOutput": True,
-                                "outputKey": "Article Route"
-                            }
-                        ]
-                    },
-                    "options": {
-                        "fallbackOutput": True
-                    }
                 }
+                node["parameters"]["rules"] = {
+                    "values": [
+                        {
+                            "conditions": {
+                                "options": {"caseSensitive": True, "leftValue": "", "typeValidation": "strict"},
+                                "conditions": [{"leftValue": "={{ $json.route }}", "rightValue": "youtube", "operator": {"type": "string", "operation": "equals", "singleValue": True}}],
+                                "combinator": "and"
+                            },
+                            "renameOutput": True,
+                            "outputKey": "YouTube Route"
+                        },
+                        {
+                            "conditions": {
+                                "options": {"caseSensitive": True, "leftValue": "", "typeValidation": "strict"},
+                                "conditions": [{"leftValue": "={{ $json.route }}", "rightValue": "article", "operator": {"type": "string", "operation": "equals", "singleValue": True}}],
+                                "combinator": "and"
+                            },
+                            "renameOutput": True,
+                            "outputKey": "Article Route"
+                        },
+                        {
+                            "conditions": {
+                                "options": {"caseSensitive": True, "leftValue": "", "typeValidation": "strict"},
+                                "conditions": [{"leftValue": "={{ $json.route }}", "rightValue": "text", "operator": {"type": "string", "operation": "equals", "singleValue": True}}],
+                                "combinator": "and"
+                            },
+                            "renameOutput": True,
+                            "outputKey": "Text Route"
+                        }
+                    ]
+                }
+                node["parameters"]["options"] = {"fallbackOutput": False}
             
             elif node["name"] == "YouTube Transcript":
                 node["parameters"]["url"] = "=http://youtube-extractor:5000/transcript?url={{encodeURIComponent($json.target_url)}}"
             
             elif node["name"] == "Jina API Extract (Article)":
-                node["parameters"]["url"] = "https://r.jina.ai/={{$json.target_url}}"
+                node["parameters"]["url"] = "=https://r.jina.ai/{{$json.target_url}}"
                 
             elif node["name"] == "Set Text Content":
                 # Text node uses original text if no url
