@@ -24,12 +24,10 @@ Choose the track that fits your workflow.
 
 **2. Configure the Environment**
 - Run `./scripts/setup_host.sh` to generate the `.env` file.
-- Start a local tunnel to expose port 5678 to the internet: `npx localtunnel --port 5678 --subdomain your-stable-name`
 - Open `.env` and set:
   ```env
   STORAGE_MODE=local
   OBSIDIAN_API_KEY=your_obsidian_key_here
-  WEBHOOK_URL=https://your-tunnel-url.loca.lt
   TELEGRAM_BOT_TOKEN=your_token
   GEMINI_API_KEY=your_token
   ```

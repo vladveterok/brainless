@@ -9,13 +9,12 @@
       },
       "id": "99ea78f8-3e4b-4df2-8c1d-19598c19eb14",
       "name": "Telegram Trigger",
-      "type": "n8n-nodes-base.telegramTrigger",
-      "typeVersion": 1.1,
+      "type": "@mentoster/n8n-nodes-telegram-polling.telegramPollingTrigger",
+      "typeVersion": 1,
       "position": [
         240,
         300
-      ],
-      "webhookId": "731df464-9df2-421f-82ff-11c58ed85c96"
+      ]
     },
     {
       "parameters": {

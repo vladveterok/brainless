@@ -42,7 +42,7 @@ Your local Obsidian app needs to automatically download the notes that n8n pushe
      1. Uncheck **"Install Ops Agent for Monitoring and Logging"**. It consumes precious RAM/CPU on this tiny micro-server, and we don't need it.
      2. Under Data Protection / Backups, ensure **"Snapshot schedules"** is turned off. Snapshots are *not* free and will incur storage charges. Your data is backed up to GitHub anyway!
    - Click Create.
-2. **Open the Webhook Port (Critically Important):**
+2. **Open the n8n UI Port:**
    - By default, Google blocks port `5678`. Go to **VPC Network** -> **Firewall**.
    - Click **Create Firewall Rule**.
    - Name: `allow-n8n`. 
@@ -58,7 +58,9 @@ Inside the Google Cloud SSH terminal, run these exact commands sequentially:
 
 1. **Install Docker:**
    ```bash
-   sudo apt update && sudo apt install docker.io docker-compose git -y
+   sudo apt update && sudo apt install docker.io docker-compose-plugin git -y
+   sudo usermod -aG docker $USER
+   newgrp docker
    ```
 2. **Clone your project:**
    ```bash
@@ -76,12 +78,12 @@ Inside the Google Cloud SSH terminal, run these exact commands sequentially:
    - `GITHUB_OWNER=your_github_username`
    - `GITHUB_REPO=my-obsidian-vault`
    - `GITHUB_TOKEN=your_fine_grained_token`
-   - `WEBHOOK_URL=http://<YOUR_GOOGLE_VM_EXTERNAL_IP>:5678` *(No localtunnel needed!)*
    - Set your `TELEGRAM_BOT_TOKEN` and `GEMINI_API_KEY`.
    *(Press Ctrl+X, then type Y, then press Enter to save and exit).*
 4. **Start the Engine:**
    ```bash
-   sudo docker-compose up -d --build
+   chmod +x ./scripts/setup_host.sh
+   ./scripts/setup_host.sh
    ```
 
 ## Step 5: Final n8n Setup

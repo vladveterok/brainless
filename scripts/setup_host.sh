@@ -42,7 +42,7 @@ if [ $MISSING_VARS -gt 0 ]; then
     echo "Setup requires your attention."
     echo "Please fill in the missing variables in .env."
     echo "Then you can start the environment manually using:"
-    echo "docker compose up -d"
+    echo "./scripts/setup_host.sh"
     echo "--------------------------------------------------------"
     exit 1
 fi
@@ -51,7 +51,7 @@ echo "Environment validated successfully!"
 
 # 4. Start n8n
 echo "Starting n8n via Docker Compose..."
-docker compose up -d --build
+docker compose up -d --build --force-recreate
 
 echo "--------------------------------------------------------"
 echo "n8n is running. You can access it at http://localhost:5678"
