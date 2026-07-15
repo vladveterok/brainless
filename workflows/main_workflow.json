@@ -240,7 +240,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const responseText = $json.candidates[0].content.parts[0].text;\n\n// Strip potential markdown backticks just in case\nconst cleanJson = responseText.replace(/```json\\n?|```/g, '').trim();\nconst parsed = JSON.parse(cleanJson);\n\nreturn {\n    json: {\n        title: parsed.title,\n        tags: parsed.tags || [],\n        content: parsed.content\n    }\n};"
+        "jsCode": "const responseText = $json.candidates[0].content.parts[0].text;\n\n// Strip potential markdown backticks just in case\nconst cleanJson = responseText.replace(/```json\\n?|```/g, '').trim();\nconst parsed = JSON.parse(cleanJson);\n\nconst tags = parsed.tags || [];\nconst markdownContent = `---\\ntags: [${tags.join(', ')}]\\nsource: ${$node[\"Message Parser\"].json.route}\\n---\\n# ${parsed.title}\\n\\n${parsed.content}`;\n\nreturn {\n    json: {\n        title: parsed.title,\n        tags: tags,\n        content: parsed.content,\n        base64_content: Buffer.from(markdownContent).toString('base64')\n    }\n};"
       },
       "id": "set-normalized-insights",
       "name": "Set Normalized Insights",
@@ -262,6 +262,26 @@
       "position": [
         230,
         -300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$env[\"STORAGE_MODE\"]}}",
+              "value2": "github"
+            }
+          ]
+        }
+      },
+      "id": "storage-router",
+      "name": "Storage Router",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        2100,
+        300
       ]
     },
     {
@@ -290,14 +310,46 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        2100,
+        2400,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://api.github.com/repos/{{$env[\"GITHUB_OWNER\"]}}/{{$env[\"GITHUB_REPO\"]}}/contents/notes/{{encodeURIComponent($json.title)}}.md",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env[\"GITHUB_TOKEN\"]}}"
+            },
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.v3+json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ message: `Auto-save: ${$json.title}`, content: $json.base64_content }) }}",
+        "options": {}
+      },
+      "id": "github-storage-node",
+      "name": "GitHub Storage Node",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        2400,
         300
       ]
     },
     {
       "parameters": {
         "chatId": "={{$node[\"Telegram Trigger\"].json.message.chat.id}}",
-        "text": "=✅ Successfully saved to Obsidian Vault!\n\n📄 **{{$node[\"Set Normalized Insights\"].json.title}}**\n🏷️ Tags: {{$node[\"Set Normalized Insights\"].json.tags.join(', ')}}",
+        "text": "=✅ Successfully saved to Vault!\n\n📄 **{{$node[\"Set Normalized Insights\"].json.title}}**\n🏷️ Tags: {{$node[\"Set Normalized Insights\"].json.tags.join(', ')}}",
         "additionalFields": {}
       },
       "id": "telegram-send-node",
@@ -305,8 +357,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        2400,
-        300
+        2700,
+        200
       ]
     }
   ],
@@ -429,6 +481,24 @@
       "main": [
         [
           {
+            "node": "Storage Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Storage Router": {
+      "main": [
+        [
+          {
+            "node": "GitHub Storage Node",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
             "node": "Obsidian Storage Node",
             "type": "main",
             "index": 0
@@ -448,6 +518,17 @@
       ]
     },
     "Obsidian Storage Node": {
+      "main": [
+        [
+          {
+            "node": "Telegram Send",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GitHub Storage Node": {
       "main": [
         [
           {

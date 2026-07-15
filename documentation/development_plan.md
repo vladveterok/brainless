@@ -46,6 +46,12 @@
 4.  Write a detailed `README.md` explaining how to import the JSON files into n8n and where to paste the required API keys.
 
 ## Phase 6: Infrastructure & Deployment
-**Goal:** Establish a permanent, stable hosting and delivery pipeline.
-1.  **Hosting Solution:** Define and implement a permanent hosting strategy for the n8n instance (replacing the temporary local docker setup if necessary).
-2.  **Webhook Stability:** Replace the unstable `localtunnel` workaround with a production-grade reverse proxy (e.g., Cloudflare Tunnels, Nginx, or Caddy) to ensure reliable Telegram webhook delivery.
+**Goal:** Establish a permanent, stable hosting and delivery pipeline (Dual Environment).
+1.  **Dual Environment Architecture:** Ensure the repository supports both local Mac/PC deployment and headless 24/7 cloud VPS deployment seamlessly.
+2.  **GitHub Storage Sync:** Implement a branching workflow where `STORAGE_MODE=github` pushes Markdown directly to a private GitHub repo, bypassing the need for a local Obsidian connection on the cloud VPS.
+3.  **Documentation:** Rewrite the README to provide exact, copy-paste tutorials for setting up Google Cloud Platform (e2-micro free tier), GitHub syncing, and Docker.
+
+## Phase 7: DevOps Automation (Infrastructure as Code)
+**Goal:** Automate the provisioning and deployment process so non-technical users can spin up the cloud bot without navigating complex web consoles.
+1.  **Terraform Configuration:** Write an Infrastructure as Code script (`main.tf`) that automatically provisions the Google Cloud `e2-micro` instance, formats the 30GB disk, sets the Premium networking tier, configures the firewall rules, and disables unnecessary gotchas (Ops Agent, Snapshots).
+2.  **One-Click Deployment Script:** Create a simple CLI script (`deploy_cloud.sh`) that takes the user's secrets, authenticates with GCP, runs Terraform, and launches the Docker containers headlessly.
