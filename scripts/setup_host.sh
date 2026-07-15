@@ -9,7 +9,11 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
+if docker compose version &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker compose"
+elif command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE_CMD="docker-compose"
+else
     echo "Error: Docker Compose is not installed."
     exit 1
 fi
@@ -51,7 +55,7 @@ echo "Environment validated successfully!"
 
 # 4. Start n8n
 echo "Starting n8n via Docker Compose..."
-docker compose up -d --build --force-recreate
+$DOCKER_COMPOSE_CMD up -d --build --force-recreate
 
 echo "--------------------------------------------------------"
 echo "n8n is running. You can access it at http://localhost:5678"
