@@ -51,7 +51,12 @@
 2.  **GitHub Storage Sync:** Implement a branching workflow where `STORAGE_MODE=github` pushes Markdown directly to a private GitHub repo, bypassing the need for a local Obsidian connection on the cloud VPS.
 3.  **Documentation:** Rewrite the README to provide exact, copy-paste tutorials for setting up Google Cloud Platform (e2-micro free tier), GitHub syncing, and Docker.
 
-## Phase 7: DevOps Automation (Infrastructure as Code)
+## Phase 7: Interactive Telegram Feedback (Auto-Store + Notify)
+**Goal:** Enhance the Telegram bot to return the AI-generated note back to the user as a confirmation receipt after successfully pushing it to GitHub.
+1.  **Workflow Modification:** Update `workflows/main_workflow.json` to dynamically inject the output from the Gemini node into the final Telegram Send message.
+2.  **Formatting:** Ensure the Telegram message clearly indicates success and cleanly formats the Markdown payload.
+
+## Phase 8: DevOps Automation (Infrastructure as Code)
 **Goal:** Automate the provisioning and deployment process so non-technical users can spin up the cloud bot without navigating complex web consoles.
 1.  **Terraform Configuration:** Write an Infrastructure as Code script (`main.tf`) that automatically provisions the Google Cloud `e2-micro` instance, formats the 30GB disk, sets the Premium networking tier, configures the firewall rules, and disables unnecessary gotchas (Ops Agent, Snapshots).
 2.  **One-Click Deployment Script:** Create a simple CLI script (`deploy_cloud.sh`) that takes the user's secrets, authenticates with GCP, runs Terraform, and launches the Docker containers headlessly.

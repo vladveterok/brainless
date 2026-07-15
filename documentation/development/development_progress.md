@@ -9,4 +9,5 @@
 | Phase 4 | Building the Storage Adapter (Obsidian) | Done |
 | Phase 5 | Closing the Loop | Done |
 | Phase 6 | Infrastructure & Deployment | Done |
-| Phase 7 | DevOps Automation (Infrastructure as Code) | ToDo |
+| Phase 7 | Interactive Telegram Feedback (Auto-Store + Notify) | ToDo |
+| Phase 8 | DevOps Automation (Infrastructure as Code) | ToDo |
