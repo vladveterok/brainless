@@ -56,19 +56,28 @@ Your local Obsidian app needs to automatically download the notes that n8n pushe
 ## Step 4: Deploying Your App on the VPS
 Inside the Google Cloud SSH terminal, run these exact commands sequentially:
 
-1. **Install Docker:**
+1. **Allocate Virtual RAM (Swap):**
+   *Because the free e2-micro instance only has 1GB of RAM, we must add a 2GB swap file so the server does not freeze during compilation.*
+   ```bash
+   sudo fallocate -l 2G /swapfile
+   sudo chmod 600 /swapfile
+   sudo mkswap /swapfile
+   sudo swapon /swapfile
+   echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+   ```
+2. **Install Docker:**
    ```bash
    sudo apt update && sudo apt install docker.io docker-compose-v2 git -y
    sudo usermod -aG docker $USER
    newgrp docker
    ```
-2. **Clone your project:**
+3. **Clone your project:**
    ```bash
    git clone -b branch_name https://github.com/vladveterok/brainless.git
 
    cd brainless
    ```
-3. **Configure the Secrets (.env):**
+4. **Configure the Secrets (.env):**
    ```bash
    cp .env.example .env
    nano .env
@@ -80,7 +89,7 @@ Inside the Google Cloud SSH terminal, run these exact commands sequentially:
    - `GITHUB_TOKEN=your_fine_grained_token`
    - Set your `TELEGRAM_BOT_TOKEN` and `GEMINI_API_KEY`.
    *(Press Ctrl+X, then type Y, then press Enter to save and exit).*
-4. **Start the Engine:**
+5. **Start the Engine:**
    ```bash
    chmod +x ./scripts/setup_host.sh
    ./scripts/setup_host.sh
@@ -92,6 +101,6 @@ Inside the Google Cloud SSH terminal, run these exact commands sequentially:
 3. In n8n, click **Add workflow** -> **...** (top right menu) -> **Import from File**. Select `workflows/main_workflow.json` from your laptop.
 4. Double-click the **Telegram Trigger** node. 
 5. Under "Credential for Telegram API", select **Create New Credential**. Name it "My Telegram Bot". Type `dummy` in the token field, save, and close. *(Because the `.env` variables are strictly whitelisted in Docker, n8n ignores this dummy text and seamlessly uses the real token in the background).*
-6. Toggle the workflow to **Active** (top right corner).
+6. Click the **Publish** button (or toggle) in the top right corner to activate the workflow.
 
 Your bot is now 100% operational in the cloud, and your laptop will pull down any newly generated notes every 5 minutes.
