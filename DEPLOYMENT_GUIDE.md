@@ -58,7 +58,7 @@ Inside the Google Cloud SSH terminal, run these exact commands sequentially:
 
 1. **Install Docker:**
    ```bash
-   sudo apt update && sudo apt install docker.io docker-compose-plugin git -y
+   sudo apt update && sudo apt install docker.io docker-compose-v2 git -y
    sudo usermod -aG docker $USER
    newgrp docker
    ```

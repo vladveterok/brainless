@@ -11,10 +11,9 @@ fi
 
 if docker compose version &> /dev/null; then
     DOCKER_COMPOSE_CMD="docker compose"
-elif command -v docker-compose &> /dev/null; then
-    DOCKER_COMPOSE_CMD="docker-compose"
 else
-    echo "Error: Docker Compose is not installed."
+    echo "Error: Docker Compose V2 is not installed or not active. V1 is deprecated and unsupported."
+    echo "Please run: sudo apt remove docker-compose -y && sudo apt install docker-compose-v2 -y"
     exit 1
 fi
 
