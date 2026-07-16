@@ -348,7 +348,7 @@
     {
       "parameters": {
         "chatId": "={{$node[\"Telegram Trigger\"].json.message.chat.id}}",
-        "text": "=✅ Successfully saved to Vault!\n\n📄 **{{$node[\"Set Normalized Insights\"].json.title}}**\n🏷️ Tags: {{$node[\"Set Normalized Insights\"].json.tags.join(', ')}}",
+        "text": "=✅ Successfully saved to Vault!\n\n📄 **{{$node[\"Set Normalized Insights\"].json.title}}**\n🏷️ Tags: {{$node[\"Set Normalized Insights\"].json.tags.join(', ')}}\n\n---\n{{$node[\"Set Normalized Insights\"].json.content}}",
         "additionalFields": {}
       },
       "id": "telegram-send-node",
