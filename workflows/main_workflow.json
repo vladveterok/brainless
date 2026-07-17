@@ -239,7 +239,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const responseText = $json.candidates[0].content.parts[0].text;\n\n// Strip potential markdown backticks just in case\nconst cleanJson = responseText.replace(/```json\\n?|```/g, '').trim();\nconst parsed = JSON.parse(cleanJson);\n\nconst tags = parsed.tags || [];\nconst markdownContent = `---\\ntags: [${tags.join(', ')}]\\nsource: ${$node[\"Message Parser\"].json.route}\\n---\\n# ${parsed.title}\\n\\n${parsed.content}`;\n\nreturn {\n    json: {\n        title: parsed.title,\n        tags: tags,\n        content: parsed.content,\n        base64_content: Buffer.from(markdownContent).toString('base64')\n    }\n};"
+        "jsCode": "const responseText = $json.candidates[0].content.parts[0].text;\n\n// Strip potential markdown backticks just in case\nconst cleanJson = responseText.replace(/```json\\n?|```/g, '').trim();\nconst parsed = JSON.parse(cleanJson);\n\nconst tags = parsed.tags || [];\nconst markdownContent = `---\\ntags: [${tags.join(', ')}]\\nsource: ${$node[\"Message Parser\"].json.route}\\n---\\n# ${parsed.title}\\n\\n${parsed.content}`;\n\nconst telegramSafeContent = (parsed.content || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst telegramSafeTitle = (parsed.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\n\nreturn {\n    json: {\n        title: parsed.title,\n        tags: tags,\n        content: parsed.content,\n        telegram_content: telegramSafeContent,\n        telegram_title: telegramSafeTitle,\n        base64_content: Buffer.from(markdownContent).toString('base64')\n    }\n};"
       },
       "id": "set-normalized-insights",
       "name": "Set Normalized Insights",
@@ -348,8 +348,10 @@
     {
       "parameters": {
         "chatId": "={{$node[\"Telegram Trigger\"].json.message.chat.id}}",
-        "text": "=✅ Successfully saved to Vault!\n\n📄 **{{$node[\"Set Normalized Insights\"].json.title}}**\n🏷️ Tags: {{$node[\"Set Normalized Insights\"].json.tags.join(', ')}}\n\n---\n{{$node[\"Set Normalized Insights\"].json.content}}",
-        "additionalFields": {}
+        "text": "=✅ <b>Successfully saved to Vault!</b>\n\n📄 <b>{{$node[\"Set Normalized Insights\"].json.telegram_title}}</b>\n🏷️ Tags: {{$node[\"Set Normalized Insights\"].json.tags.join(', ')}}\n\n---\n{{$node[\"Set Normalized Insights\"].json.telegram_content}}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
       },
       "id": "telegram-send-node",
       "name": "Telegram Send",
